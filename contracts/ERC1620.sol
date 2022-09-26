@@ -31,16 +31,16 @@ contract ERC1620 is IMultiStream{
 
     mapping(uint => Stream) public streams;
 
-    function createStream(address _token, address _sender, address _receiver, uint _amount, uint _rate, uint _timestamp) external returns(bool){
+    function createStream(address _token, address _receiver, uint _amount, uint _rate, uint _timestamp) external returns(bool){
         require(_token != address(0), "ERC1620: token address cannot be zero");
-        require(_sender != address(0), "ERC1620: sender address cannot be zero");
+        require(msg.sender != address(0), "ERC1620: sender address cannot be zero");
         require(_receiver != address(0), "ERC1620: receiver address cannot be zero");
         require(_amount > 0, "ERC1620: amount cannot be zero");
         require(_rate > 0, "ERC1620: rate cannot be zero");
         require(_timestamp > 0, "ERC1620: timestamp cannot be zero");
         streamid++;
-        streams[streamid]=Stream(streamid,_token,_sender,_receiver,_amount,_rate,_timestamp,true);
-        emit  StreamCreated(streamid, _token, _sender, _receiver, _amount, _rate, _timestamp, true);
+        streams[streamid]=Stream(streamid,_token,msg.sender,_receiver,_amount,_rate,_timestamp,true);
+        emit  StreamCreated(streamid, _token, msg.sender, _receiver, _amount, _rate, _timestamp, true);
         return true;
     }
 
