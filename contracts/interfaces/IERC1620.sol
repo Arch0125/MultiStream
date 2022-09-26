@@ -15,7 +15,7 @@ interface IMultiStream {
     *
     * emits the event {StreamCreated} if transaction is successful
     */
-    function createStream(uint _id, address _token, address _sender, address _receiver, uint _amount, uint _rate, uint _timestamp) external returns(bool);
+    function createStream(address _token, address _sender, address _receiver, uint _amount, uint _rate, uint _timestamp) external returns(bool);
 
     /*
     * @dev this function will take amount/timestamp or both to change the current rate
