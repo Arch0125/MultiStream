@@ -2,10 +2,12 @@
 pragma solidity ^0.8.0;
 
 import "./interfaces/IERC1620.sol";
+import "./interfaces/IERC20.sol";
 
 contract ERC1620 is IMultiStream{
 
     uint public streamid = 0;
+    IERC20 public token;
 
     struct Stream{
         uint id;
@@ -36,8 +38,28 @@ contract ERC1620 is IMultiStream{
 
     mapping(uint => Stream) public streams;
     mapping(address => NetFlowRate) public netFlowRates;
+    mapping(address => uint) public vaultBalanceOf;
+
+    function depositToken(address _token, uint _amount) public returns(bool){
+        token = IERC20(_token);
+        token.transferFrom(msg.sender, address(this), _amount);
+        vaultBalanceOf[_token] += _amount;
+        return true;
+    }
+
+    function getNetFlowRate(address _address) external view returns(bool){
+        uint inflow = netFlowRates[_address].Inflow;
+        uint outflow = netFlowRates[_address].Outflow;
+        if(inflow >= outflow){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     function createStream(address _token, address _sender, address _receiver, uint _amount, uint _rate, uint _timestamp) external returns(bool){
+        token = IERC20(_token);
         require(_token != address(0), "ERC1620: token address cannot be zero");
         require(msg.sender != address(0), "ERC1620: sender address cannot be zero");
         //require(msg.sender == _sender, "ERC1620: sender address should be the same as the msg.sender");
@@ -45,6 +67,7 @@ contract ERC1620 is IMultiStream{
         require(_amount > 0, "ERC1620: amount cannot be zero");
         require(_rate > 0, "ERC1620: rate cannot be zero");
         require(_timestamp > 0, "ERC1620: timestamp cannot be zero");
+        require(netFlowRates[_sender].Inflow >= netFlowRates[_sender].Outflow, "ERC1620: sender should have a positive net flow rate");
         streamid++;
         streams[streamid]=Stream(streamid,_token,msg.sender,_receiver,_amount,_rate,_timestamp,true);
         netFlowRates[_receiver].Inflow += _rate;
@@ -78,8 +101,8 @@ contract ERC1620 is IMultiStream{
         return streams[_id];
     }
 
-    function getNetFlowRate(address _address) external view returns(NetFlowRate memory){
-        return netFlowRates[_address];
+    function getVaultBalance(address _token) external view returns(uint){
+        return vaultBalanceOf[_token];
     }
 
 }
