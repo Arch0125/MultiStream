@@ -106,11 +106,16 @@ const {
             expect(await multiStream.createStream("0x5fbdb2315678afecb367f032d93f642f64180aa3","0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266","0x70997970C51812dc3A010C7d01b50e0d17dc79C8",100,5,166732456)).ok;
         })
 
+        it("Should forward the inFlow amount to the outgoing stream",async function(){
+            const { multiStream } = await loadFixture(deployMultiStreamFixture);
+            await expect(multiStream.createStream("0x5fbdb2315678afecb367f032d93f642f64180aa3","0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266","0x70997970C51812dc3A010C7d01b50e0d17dc79C8",100,5,166732456)).ok;
+        })
+
         it("Should not create a stream if Net Stream Balance < New Stream Amount",async function(){
             const { multiStream } = await loadFixture(deployMultiStreamFixture);
             await multiStream.createStream("0x5fbdb2315678afecb367f032d93f642f64180aa3","0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266","0x70997970C51812dc3A010C7d01b50e0d17dc79C8",100,15,166732456)
             var flowRate = await multiStream.getNetFlowRate("0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266");
-            console.log("Net Flow Rate Negative: ",flowRate);
+            console.log("Net Flow Rate Positive: ",flowRate);
             await expect(multiStream.createStream("0x5fbdb2315678afecb367f032d93f642f64180aa3","0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266","0x70997970C51812dc3A010C7d01b50e0d17dc79C8",100,5,166732456)).to.be.revertedWith("MultiStream: Net Stream Balance < New Stream Amount").rejected;
         })
 
