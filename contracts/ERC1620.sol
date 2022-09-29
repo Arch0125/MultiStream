@@ -78,6 +78,7 @@ contract ERC1620 is IMultiStream{
 
     function modifyStream(uint _id, uint _amount, uint _timestamp)external returns(bool){
         require(streams[_id].id != 0, "ERC1620: stream does not exist");
+        
         require(streams[_id].sender == msg.sender, "ERC1620: only stream owner can modify");
         require(_id <= streamid, "ERC1620: invalid stream id");
         require(_amount > 0 && _timestamp > 0, "ERC1620: amount and timestamp should be greater than zero");
