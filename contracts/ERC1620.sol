@@ -88,6 +88,16 @@ contract ERC1620 is IMultiStream{
         return true;
     }
 
+    function stopStream(uint _id) external returns(bool){
+        require(streams[_id].id != 0, "ERC1620: stream does not exist");
+        require(streams[_id].sender == msg.sender, "ERC1620: only stream owner can stop");
+        require(_id <= streamid, "ERC1620: invalid stream id");
+        require(streams[_id].status == true, "ERC1620: stream is already stopped");
+        streams[_id].status = false;
+        stream[_id].rate = 0;
+        return true;
+    }
+
     function deleteStream(uint _id)external returns (bool){
         streams[_id].status = false;
         streams[_id].rate=0;
