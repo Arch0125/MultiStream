@@ -94,7 +94,7 @@ contract ERC1620 is IMultiStream{
         require(_id <= streamid, "ERC1620: invalid stream id");
         require(streams[_id].status == true, "ERC1620: stream is already stopped");
         streams[_id].status = false;
-        stream[_id].rate = 0;
+        streams[_id].rate = 0;
         return true;
     }
 
